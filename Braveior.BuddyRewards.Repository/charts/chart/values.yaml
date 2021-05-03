@@ -1,0 +1,14 @@
+environment: development
+apphost: k8s
+label:
+  name: braveior-buddyrewards
+container:
+  name: braveior-buddyrewards
+  pullPolicy: IfNotPresent
+  image: sreeparam/braveior.buddyrewards
+  tag: v4
+  port: 80
+replicas: 3
+service:
+  type: NodePort
+  port: 8088

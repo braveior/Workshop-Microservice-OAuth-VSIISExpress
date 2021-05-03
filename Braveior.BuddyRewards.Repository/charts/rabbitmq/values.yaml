@@ -1,0 +1,18 @@
+environment: development
+apphost: k8s
+label:
+  name: rabbit-mq-service
+container:
+  name: rabbit-mq-service
+  pullPolicy: IfNotPresent
+  image: rabbitmq
+  tag: 3-management
+  portMain: 5672
+  portManage: 15672
+replicas: 1
+serviceMain:
+  type: NodePort
+  port: 5672
+serviceManage:
+  type: NodePort
+  port: 15672

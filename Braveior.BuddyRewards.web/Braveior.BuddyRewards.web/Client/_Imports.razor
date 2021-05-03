@@ -1,0 +1,40 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+
+@*MudBlazor dependencies*@
+
+@using MudBlazor
+
+@*Application Dependencies *@
+@using Braveior.BuddyRewards.web.Client
+@using Braveior.BuddyRewards.web.Client.Shared
+@using Braveior.BuddyRewards.web.Client.Services
+@using Braveior.BuddyRewards.web.Client.DTO
+@using Braveior.BuddyRewards.web.Client.Providers
+@using Braveior.BuddyRewards.web.Client.State.Common;
+
+@*Dependencies for Fluxor State Management *@
+@using Fluxor
+
+
+@*Dependencies for ChartJS *@
+@using ChartJs.Blazor;
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Interop
+@using ChartJs.Blazor.BarChart

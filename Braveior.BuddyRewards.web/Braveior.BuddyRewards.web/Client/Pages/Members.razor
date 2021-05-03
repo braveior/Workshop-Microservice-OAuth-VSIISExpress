@@ -1,0 +1,82 @@
+﻿@page "/members"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IDataService DataService
+
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<MemberDTO>>>(ServerReload))"
+              Dense="true" Hover="true" @ref="table">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Members</MudText>
+            <MudToolBarSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="name" T="MemberDTO">Name</MudTableSortLabel></MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Role</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Role">@context.Role</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+    <MudOverlay @bind-visible ="isVisible" DarkBackground="true" >
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+</MudContainer>
+
+
+
+
+@code {
+
+
+    private MudTable<MemberDTO> table;
+    private bool isVisible  = true;
+
+    private string searchString = "";
+
+
+
+    /// <summary>
+    /// Paginated data for the Member table
+    /// </summary>
+    /// <param name="tablestate"></param>
+    /// <returns></returns>
+    private async Task<TableData<MemberDTO>> ServerReload(TableState tablestate)
+    {
+        ToggleOverlay(true);
+        //REST API call to get the member data
+        TableDataDTO<MemberDTO> tableDataDTO = await DataService.GetMembers(new TableStateDTO { Page = tablestate.Page, PageSize = tablestate.PageSize, SortDirection = tablestate.SortDirection.ToString() , SearchKey = searchString});
+
+        var tableData = new TableData<MemberDTO>() { TotalItems = Convert.ToInt32(tableDataDTO.TotalCount), Items = tableDataDTO.PagedMemberData };
+        ToggleOverlay(false);
+        return tableData;
+    }
+    /// <summary>
+    /// Data Filtering for the member table
+    /// </summary>
+    /// <param name="text"></param>
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+    /// <summary>
+    /// Loadig indicator visibility Toggle during data load from REST api
+    /// </summary>
+    /// <param name="visible"></param>
+    private void ToggleOverlay(bool visible)
+    {
+        isVisible = visible;
+        StateHasChanged();
+    }
+
+}

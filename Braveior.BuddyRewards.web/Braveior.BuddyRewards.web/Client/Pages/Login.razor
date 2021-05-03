@@ -1,0 +1,102 @@
+﻿@page "/"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject ILoginService LoginService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.ExtraSmall">
+
+    <MudCard Class="mt-16">
+        <MudCardContent>
+            <MudForm @bind-IsValid="@success">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="member.Email" Label="Email" Variant="Variant.Outlined" Margin="Margin.Dense" Required="true" RequiredError="Email is required!" Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="member.Password" Label="Password" Variant="Variant.Outlined" Margin="Margin.Dense" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" Required="true"
+                                      RequiredError="Password is required!" OnAdornmentClick="ToggleTextVisibility"></MudTextField>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton  FullWidth="true"  Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Disabled="@(!success)" OnClick="ValidateUser" >Login</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+
+
+
+@code {
+    public string TextValue { get; set; }
+    private LoginDTO member = new LoginDTO();
+    bool isShow;
+    bool success;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    ClaimsPrincipal claimsPrincipal;
+
+    //Global Authentication State to get the Login Status and data
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected async override System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        //Redirect the user to Home page if already authenticated
+        claimsPrincipal = (await authenticationStateTask).User;
+        if (claimsPrincipal.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/index");
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ValidateUser()
+    {
+        try
+        {
+            //Authenticate using REST API
+            var returnedUser = await LoginService.LoginAsync(member);
+
+            if (returnedUser.Email != null)
+            {
+                //Redirect to Home page if Authentication successful
+                await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(returnedUser);
+                NavigationManager.NavigateTo("/index");
+            }
+            else
+            {
+                Snackbar.Clear();
+                Snackbar.Add("Invalid username or password", Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Clear();
+            Snackbar.Add("Invalid username or password", Severity.Error);
+        }
+
+    }
+    /// <summary>
+    /// Method to toggle visibility of the Password field
+    /// </summary>
+    void ToggleTextVisibility()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+}

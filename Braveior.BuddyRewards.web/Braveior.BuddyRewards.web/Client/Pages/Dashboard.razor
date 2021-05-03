@@ -1,0 +1,85 @@
+﻿@page "/index"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDataService DataService
+@inject ISnackbar Snackbar
+
+
+
+<MudContainer MaxWidth="MaxWidth.Small">
+
+    <MudPaper Class="mt-16" Elevation="3">
+        <Chart Config="config"></Chart>
+    </MudPaper>
+
+
+</MudContainer>
+
+@code {
+
+    private BarConfig config;
+
+    //Dependency Injection for the Fluxor State 
+    [Inject]
+    private IState<CommonState> CommonState { get; set; }
+
+
+    protected async override System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        config = GetBarChartConfig();
+        //Y Axes Configuration
+        BarDataset<double> dataset = new BarDataset<double>()
+        {
+            Label = "Average Rating",
+            BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(128, System.Drawing.Color.Red)),
+            BorderColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Red),
+            BorderWidth = 1
+        };
+        //Get Graph data from REST API Call
+        var graphData = await DataService.GetAverageRatings(CommonState.Value.LoggedInUser.ID);
+        foreach (var val in graphData)
+        {
+            dataset.Add(val.YVal);
+            config.Data.Labels.Add(val.XVal);
+        }
+        config.Data.Datasets.Add(dataset);
+    }
+
+    //Configuration for the CharJS Bar Chart
+    private BarConfig GetBarChartConfig()
+    {
+
+        var config = new BarConfig(horizontal: false)
+            {
+                Options = new BarOptions
+                {
+                    Responsive = true,
+                    Legend = new Legend
+                    {
+                        Position = ChartJs.Blazor.Common.Enums.Position.Top
+
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Monthly Average Rating"
+                    },
+                    Scales = new BarScales
+                    {
+
+                        YAxes = new List<CartesianAxis>
+                    {
+                            new LinearCartesianAxis
+                            {
+                                  Ticks = new LinearCartesianTicks
+                                  {
+                                       SuggestedMin =0
+                                  }
+                            }
+                    }
+                    }
+                }
+            };
+        return config;
+    }
+
+}

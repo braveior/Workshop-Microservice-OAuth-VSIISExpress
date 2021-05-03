@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Entities" Version="20.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Braveior.BuddyRewards.DTO\Braveior.BuddyRewards.DTO.csproj" />
+    <ProjectReference Include="..\Braveior.BuddyRewards.Repository\Braveior.BuddyRewards.Services.csproj" />
+  </ItemGroup>
+
+</Project>

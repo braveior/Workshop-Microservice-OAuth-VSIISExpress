@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Braveior.BuddyRewards.web.Server", "Braveior.BuddyRewards.web\Server\Braveior.BuddyRewards.web.Server.csproj", "{A5078782-0889-4C9C-8F04-F5B890A00956}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Braveior.BuddyRewards.web.Client", "Braveior.BuddyRewards.web\Client\Braveior.BuddyRewards.web.Client.csproj", "{07999D47-34CB-47E1-BFD0-99D894038DE1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5078782-0889-4C9C-8F04-F5B890A00956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5078782-0889-4C9C-8F04-F5B890A00956}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5078782-0889-4C9C-8F04-F5B890A00956}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5078782-0889-4C9C-8F04-F5B890A00956}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07999D47-34CB-47E1-BFD0-99D894038DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07999D47-34CB-47E1-BFD0-99D894038DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07999D47-34CB-47E1-BFD0-99D894038DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07999D47-34CB-47E1-BFD0-99D894038DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7B4F7469-6CA3-4EDB-BC53-7093D80739CA}
+	EndGlobalSection
+EndGlobal

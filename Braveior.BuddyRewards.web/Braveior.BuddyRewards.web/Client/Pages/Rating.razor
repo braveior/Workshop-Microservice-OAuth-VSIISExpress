@@ -1,0 +1,115 @@
+﻿@page "/rating"
+@inject IDataService DataService
+@inject ISnackbar Snackbar
+
+
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Ratings">
+            <MudTable ServerData="@(new Func<TableState, Task<TableData<RatingDTO>>>(ServerReload))"
+                      Dense="true" Hover="true" @ref="table">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Ratings</MudText>
+                </ToolBarContent>
+                <RowTemplate>
+                    <MudPaper Width="400px" Class="pa-4 ma-2" Elevation="3">
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.body2">@context.Comment</MudText>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudRating ReadOnly="true" SelectedValue="@context.Star" />
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.subtitle2">@context.RatedBy</MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Align="Align.Right" Typo="Typo.subtitle2">@string.Format("{0:MMM d, yyyy}", @context.RatingDate)</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudTabPanel>
+        <MudTabPanel Text="Add Rating">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudAutocomplete T="MemberDTO" Label="Choose Member" @bind-Value="member" SearchFunc="@Search" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" />
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    
+                    <MudTextField T="string" Label="Comments" Variant="Variant.Outlined" @bind-Text="rating.Comment" Lines="10" />
+                    <MudRating Size="Size.Large" @bind-SelectedValue="rating.Star" />
+                    <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" OnClick="SubmitRating">Submit</MudButton>
+                </MudCardContent>
+</MudCard>
+        </MudTabPanel>
+    </MudTabs>
+
+</MudContainer>
+
+
+
+
+@code {
+
+    private MemberDTO member;
+
+    private RatingDTO rating = new RatingDTO { Star = 0, RatingDate = DateTime.Now };
+
+    private MudTable<RatingDTO> table;
+
+
+    //Dependency Injection for the Fluxor State 
+    [Inject]
+    private IState<CommonState> CommonState { get; set; }
+
+    //Populate AutoComplete Drop down for Member selection
+    private async Task<IEnumerable<MemberDTO>> Search(string key)
+    {
+        return await DataService.SearchMembers(key);
+    }
+    /// <summary>
+    /// Paginated data for the Rating table
+    /// </summary>
+    /// <param name="tablestate"></param>
+    /// <returns></returns>
+    private async Task<TableData<RatingDTO>> ServerReload(TableState tablestate)
+    {
+        TableDataDTO<RatingDTO> tableData = await DataService.GetRatings(new TableStateDTO { Page = tablestate.Page, PageSize = tablestate.PageSize, SortDirection = tablestate.SortDirection.ToString(), FilterID = CommonState.Value.LoggedInUser.ID });
+        return new TableData<RatingDTO>() { TotalItems = Convert.ToInt32(tableData.TotalCount), Items = tableData.PagedMemberData };
+    }
+
+    /// <summary>
+    /// Submit Rating for a Member
+    /// </summary>
+    /// <returns></returns>
+    private async Task SubmitRating()
+    {
+        if (member.ID != null)
+        {
+            rating.RatedForRef = member.ID;
+            rating.RatedByRef = CommonState.Value.LoggedInUser.ID;
+        }
+        //REST API call to submit rating
+        var isSuccess = await DataService.SubmitRating(rating);
+        Snackbar.Clear();
+        if (isSuccess)
+        {
+            //Notification bar
+            Snackbar.Add("Rating Submitted", Severity.Success);
+        }
+        else
+        {
+            //Notification bar
+            Snackbar.Add("Error submit rating", Severity.Error);
+        }
+    }
+
+}

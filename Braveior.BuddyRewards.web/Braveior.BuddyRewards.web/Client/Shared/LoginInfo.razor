@@ -1,0 +1,25 @@
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <MudText Class="pr-4" Typo="Typo.subtitle1">Welcome @CommonState.Value.LoggedInUser.Name</MudText>
+        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" OnClick="Logout">Logout</MudButton>
+    </Authorized>
+</AuthorizeView>
+@code{
+    //Dependency Injection for the Fluxor State 
+    [Inject]
+    private IState<CommonState> CommonState { get; set; }
+
+    /// <summary>
+    /// Log out the User
+    /// </summary>
+    /// <returns></returns>
+    private async Task Logout()
+    {
+        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+        NavigationManager.NavigateTo("/");
+    }
+}
